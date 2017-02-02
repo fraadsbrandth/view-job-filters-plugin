@@ -17,22 +17,22 @@ import org.kohsuke.stapler.DataBoundConstructor;
 /**
  * Simple JobFilter that filters jobs based on a regular expression, and
  * making use of negate and exclude flags.
- * 
+ *
  * TODO limitation - cannot perform validations in hetero list?
- * 
+ *
  * @author Jacob Robertson
  */
 public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
-	
+
 	static enum ValueType {
 		NAME, DESCRIPTION, SCM, EMAIL, MAVEN, SCHEDULE, NODE
 	}
-	
+
 	transient private ValueType valueType;
 	private String valueTypeString;
 	private String regex;
 	transient private Pattern pattern;
-	
+
     @DataBoundConstructor
     public RegExJobFilter(String regex, String includeExcludeTypeString, String valueTypeString) {
     	super(includeExcludeTypeString);
@@ -41,7 +41,7 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
     	this.valueTypeString = valueTypeString;
     	this.valueType = ValueType.valueOf(valueTypeString);
     }
-    
+
     Object readResolve() {
         if (regex != null) {
         	pattern = Pattern.compile(regex);
@@ -89,8 +89,17 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
     			values.add(node);
 	    	}
     	}
-    	return values;
+
+			// Setting all values to lower case
+			List<String> modifiedValues = new ArrayList();
+			for (String value : values) {
+				if (value != null) {
+					modifiedValues.add(value.toLowerCase());
+				}
+			}
+    	return modifiedValues;
     }
+
     private void addSplitValues(List<String> values, String value) {
     	if (value != null) {
     		String[] split = value.split("\n");
@@ -107,7 +116,7 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
         for (String matchValue: matchValues) {
         	// check null here so matchers don't have to
         	if (matchValue != null &&
-        				// this doesn't use "find" because that would be too inclusive, 
+        				// this doesn't use "find" because that would be too inclusive,
         				// and at this point it might break existing people's regexes
         				// - just to clarify this a bit more - if someone configures the regex of "Util.*"
         				//		we cannot assume they want to match (find) a value of "SpecialUtil"
@@ -136,10 +145,10 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
         public String getHelpFile() {
             return "/plugin/view-job-filters/regex-help.html";
         }
-        
+
         /**
          * Checks if the regular expression is valid.
-         * 
+         *
          * Does not work in hetero-list?
          *
         public FormValidation doCheckRegex( @QueryParameter String value ) throws IOException, ServletException, InterruptedException  {
