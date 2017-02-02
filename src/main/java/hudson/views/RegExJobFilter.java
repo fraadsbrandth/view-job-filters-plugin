@@ -70,7 +70,7 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
 	    		values.addAll(scmValues);
 	    	}
     	} else if (valueType == ValueType.NAME) {
-    		values.add(item.getName());
+    		values.add(item.getName() + " "); // Adding spac after each name for easier regex
     	} else if (valueType == ValueType.EMAIL) {
     		List<String> emailValues = EmailValuesHelper.getValues(item);
     		values.addAll(emailValues);
