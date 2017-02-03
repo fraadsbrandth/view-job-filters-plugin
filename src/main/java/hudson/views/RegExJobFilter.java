@@ -70,7 +70,7 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
 	    		values.addAll(scmValues);
 	    	}
     	} else if (valueType == ValueType.NAME) {
-    		values.add(item.getName() + " "); // Adding space after each name for easier regex
+    		values.add(item.getName());
     	} else if (valueType == ValueType.EMAIL) {
     		List<String> emailValues = EmailValuesHelper.getValues(item);
     		values.addAll(emailValues);
@@ -90,14 +90,7 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
 	    	}
     	}
 
-			// Setting all values to lower case
-			List<String> modifiedValues = new ArrayList();
-			for (String value : values) {
-				if (value != null) {
-					modifiedValues.add(value.toLowerCase());
-				}
-			}
-    	return modifiedValues;
+    	return values;
     }
 
     private void addSplitValues(List<String> values, String value) {
@@ -120,7 +113,7 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
         				// and at this point it might break existing people's regexes
         				// - just to clarify this a bit more - if someone configures the regex of "Util.*"
         				//		we cannot assume they want to match (find) a value of "SpecialUtil"
-	        			pattern.matcher(matchValue).matches()) {
+					(pattern.matcher(matchValue).matches() || pattern.matcher(matchValue.toLowerCase()).matches())) { // Also matches with name to lowercase
         		matched = true;
         		break;
         	}

@@ -74,6 +74,21 @@ public class RegExJobFilterTest extends HudsonTestCase {
 		expected = toList("Work_Job", "My_Job");
 		assertListEquals(expected, filtered);
 	}
+
+
+	public void testLowerCaseRegex() {
+		List<TopLevelItem> all = toList("NigHtLy_Job", "Work_NIGHTLY", "A-nightly-job", "My_Job", "Job2_Nightly", "Util_Nightly", "My_Util");
+		List<TopLevelItem> filtered = new ArrayList<TopLevelItem>();
+
+		RegExJobFilter includeNonNightly = new RegExJobFilter(".*nightly.*",
+				IncludeExcludeType.includeMatched.toString(),
+				RegExJobFilter.ValueType.NAME.toString());
+		filtered = includeNonNightly.filter(filtered, all, null);
+		List<TopLevelItem> expected = toList("NigHtLy_Job","Work_NIGHTLY", "A-nightly-job", "Job2_Nightly", "Util_Nightly");
+		assertListEquals(expected, filtered);
+	}
+
+
 	private void assertListEquals(List<TopLevelItem> l1, List<TopLevelItem> l2) {
 		assertEquals(l1.size(), l2.size());
 		for (int i = 0; i < l1.size(); i++) {
