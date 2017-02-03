@@ -1,11 +1,7 @@
 package hudson.views;
 
 import hudson.Extension;
-import hudson.model.AbstractItem;
-import hudson.model.AbstractProject;
-import hudson.model.Descriptor;
-import hudson.model.SCMedItem;
-import hudson.model.TopLevelItem;
+import hudson.model.*;
 import hudson.scm.SCM;
 
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
 
 	static enum ValueType {
-		NAME, DESCRIPTION, SCM, EMAIL, MAVEN, SCHEDULE, NODE
+		NAME, DESCRIPTION, SCM, EMAIL, MAVEN, SCHEDULE, NODE, LAST_BUILD_NAME
 	}
 
 	transient private ValueType valueType;
@@ -88,7 +84,14 @@ public class RegExJobFilter extends AbstractIncludeExcludeJobFilter {
 	    		String node = ((AbstractProject) item).getAssignedLabelString();
     			values.add(node);
 	    	}
-    	}
+    	} else if (valueType == ValueType.LAST_BUILD_NAME) {
+			if (item instanceof Job) {
+				Job job = (Job) item;
+				if (job.getLastBuild() != null && job.getLastBuild().getFullDisplayName() != null) {
+					values.add(job.getLastBuild().getFullDisplayName());
+				}
+			}
+	}
 
     	return values;
     }
